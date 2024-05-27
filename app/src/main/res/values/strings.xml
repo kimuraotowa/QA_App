@@ -1,14 +1,6 @@
 <resources>
     <string name="app_name">QA_App</string>
     <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!-- ログイン画面用文字列 -->
     <string name="login_email_hint">メールアドレス</string>
@@ -20,4 +12,11 @@
     <string name="create_account_failure_message">アカウント作成に失敗しました</string>
     <string name="login_failure_message">ログインに失敗しました</string>
     <string name="login_error_message">正しく入力してください</string>
+
+    <!--ドロワー・メニュー用文字列-->
+    <string name="genre_select_label">ジャンル選択</string>
+    <string name="menu_hobby_label">趣味</string>
+    <string name="menu_life_label">生活</string>
+    <string name="menu_health_label">健康</string>
+    <string name="menu_computer_label">コンピューター</string>
 </resources>
