@@ -12,6 +12,9 @@
         android:theme="@style/Theme.QA_App"
         tools:targetApi="31">
         <activity
+            android:name=".QuestionSendActivity"
+            android:exported="false" />
+        <activity
             android:name=".SettingActivity"
             android:exported="false" />
         <activity
