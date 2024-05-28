@@ -13,13 +13,15 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
     <style name="Theme.QA_App.NoActionBar">
+        <!-- Window Action Bar. -->
         <item name="windowActionBar">false</item>
+        <!-- Window NoTitle. -->
         <item name="windowNoTitle">true</item>
     </style>
-
+    <!-- Style Name. -->
     <style name="Theme.QA_App.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
+    <!-- Style Name. -->
     <style name="Theme.QA_App.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <!-- Customize your theme here. -->
 </resources>

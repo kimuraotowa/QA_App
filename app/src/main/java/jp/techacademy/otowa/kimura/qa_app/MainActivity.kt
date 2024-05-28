@@ -5,41 +5,40 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.core.view.GravityCompat
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.ActionBarDrawerToggle // 追加
+import androidx.core.view.GravityCompat // 追加
+import com.google.android.material.navigation.NavigationView // 追加
 import com.google.firebase.auth.FirebaseAuth
 import jp.techacademy.otowa.kimura.qa_app.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     //ViewBindingの定義
     private lateinit var binding: ActivityMainBinding
 
-    private var genre = 0
+    private var genre = 0  // 追加
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         //ツールバーの設定
         setSupportActionBar(binding.content.toolbar)
 
-        //フローティングアクションボタン(画面右下丸いのボタン)がクリックされたときのリスナー
+        //フローティングアクションボタン(画面右下丸いボタン)がクリックされたときのリスナー
         binding.content.fab.setOnClickListener {
-
-            //ログイン済みのユーザーを取得
+            // ログイン済みのユーザーを取得する
             val user = FirebaseAuth.getInstance().currentUser
 
-            //ログインしていなければログイン画面に戻る
+            // ログインしていなければログイン画面に遷移させる
             if (user == null) {
-                //リグインしてない場合LoginActivityに戻る
+                //ログインしてない場合LoginActivityに戻る
                 val intent = Intent(applicationContext, LoginActivity::class.java)
                 startActivity(intent)
             }
         }
 
-        //ドロワー(スライドメニュー)の設定
+        // ナビゲーションドロワーの設定
         //ActionBarDrawerToggle：ナビゲーションドロワーとアクションバーを連携させるためのクラス
         val toggle = ActionBarDrawerToggle(
             this,
@@ -57,8 +56,8 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         toggle.syncState()
 
         //ドロワーのメニューが選択された時の処理
-        //this:MainActivity
         binding.navView.setNavigationItemSelectedListener(this)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -68,15 +67,19 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
     //ツールバーのメニューアイテムが選択された時の処理
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        //item.itemId：で選択されたメニューアイテムのIDを取得
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        val id = item.itemId
+
+        if (id == R.id.action_settings) {
+            val intent = Intent(applicationContext, SettingActivity::class.java)
+            startActivity(intent)
+            return true
         }
+
+        return super.onOptionsItemSelected(item)
     }
 
     //メニューアイテムが選択された時の処理
-    //メニューアイテム選択：ツールバーのタイトル変更、ジャンルを表すgenre変数値の更新。
+    //メニューアイテム選択：ツールバーのタイトル変更、ジャンルを表すgenre変数値の
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_hobby -> {
@@ -96,6 +99,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                 genre = 4
             }
         }
+
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
