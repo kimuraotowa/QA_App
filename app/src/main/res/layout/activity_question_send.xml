@@ -53,7 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_below="@+id/bodyText"
-        android:text="@storing/image_view_label"/>
+        android:text="@string/image_view_label"/>
 
     <ImageView
         android:id="@+id/imageView"
