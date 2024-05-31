@@ -172,18 +172,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             questionArrayList = ArrayList()
             adapter.notifyDataSetChanged()
 
+            binding.content.inner.listView.setOnItemClickListener{ _, _, position,_ ->
+                //質問の詳細画面を起動する
+                //QuestionDetailActivityを起動
+                val intent = Intent(applicationContext, QuestionDetailActivity::class.java)
+                //質問データ渡す
+                intent.putExtra("question",questionArrayList[position])
+                //起動
+                startActivity(intent)
+            }
+
     }
 
+    //Activity再会時に呼ばれる（更新する処理）
     override fun onResume() {
         super.onResume()
+        //ナビゲーションView取得
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
 
         if (genre == 0){
-            //
+            //ナビゲーションメニューの最初のアイテムを選択。
             onNavigationItemSelected(navigationView.menu.getItem(0))
         }
     }
 
+    //オプションメニュー
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -191,11 +204,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     //ツールバーのメニューアイテムが選択された時の処理
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        //選択されたアイテムのID取得
         val id = item.itemId
 
+        //設定画面を起動
         if (id == R.id.action_settings) {
+            //SettingActivityに移動
             val intent = Intent(applicationContext, SettingActivity::class.java)
+            //起動
             startActivity(intent)
+            //メニューアイテムの選択が終了
             return true
         }
 
@@ -224,22 +242,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
+        //ドロワーを閉じる
+        //GravityCompat.START:左から開くことを示してる。
         binding.drawerLayout.closeDrawer(GravityCompat.START)
 
         // 質問のリストをクリアしてから再度Adapterにセットし、AdapterをListViewにセットし直す
         questionArrayList.clear()
+        //アダプターにに空の質問リストをセットする。
         adapter.setQuestionArrayList(questionArrayList)
+        //アダプターとリストViewに再設定する。
         binding.content.inner.listView.adapter = adapter
 
         // 選択したジャンルにリスナーを登録する
+        //すでにジャンルが存在する場合そのリスナーを削除
         if (genreRef != null) {
             genreRef!!.removeEventListener(eventListener)
         }
-        //
+        //新しいジャンルの設定
         genreRef = databaseReference.child(ContentsPATH).child(genre.toString())
+        //新しいジャンルに対してリスナーを登録する
         genreRef!!.addChildEventListener(eventListener)
-      
 
+        //メニューアイテムの選択処理が完了したことを示す
         return true
     }
 }
