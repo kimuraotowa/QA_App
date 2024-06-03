@@ -15,6 +15,7 @@
 
     <!-- ドロワー・メニュー用文字列 -->
     <string name="genre_select_label">ジャンル選択</string>
+    <string name="menu_favorite_label">お気に入り</string>
     <string name="menu_hobby_label">趣味</string>
     <string name="menu_life_label">生活</string>
     <string name="menu_health_label">健康</string>

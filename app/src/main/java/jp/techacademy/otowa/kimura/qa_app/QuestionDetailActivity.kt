@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import jp.techacademy.otowa.kimura.qa_app.databinding.ActivityQuestionDetailBinding
@@ -14,10 +15,15 @@ class QuestionDetailActivity : AppCompatActivity() {
 
     //質問を格納するための変数
     private lateinit var question: Question
+
     //質問の詳細と回答を表示するためのアダプター
     private lateinit var adapter: QuestionDetailListAdapter
+
     //Firebaseの回答データを参照を保存するための変数。
     private lateinit var answerRef: DatabaseReference
+
+    //星がタップされたかどうかの変数
+    private var isFavorite = false
 
     private val eventListener = object : ChildEventListener {
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
@@ -78,29 +84,50 @@ class QuestionDetailActivity : AppCompatActivity() {
         binding.listView.adapter = adapter
         adapter.notifyDataSetChanged()
 
-        //Fabをクリックしたときの処理
-        binding.fab.setOnClickListener {
-            // ログイン済みのユーザーを取得する
-            val user = FirebaseAuth.getInstance().currentUser
+        val user = FirebaseAuth.getInstance().currentUser
 
-            if (user == null) {
-                // ログインしていなければログイン画面(LoginActivity)に遷移させる
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                startActivity(intent)
-            } else {
-                // Questionを渡して回答作成画面を起動する
-                val intent = Intent(applicationContext,AnswerSendActivity::class.java)
-                intent.putExtra("question", question)
-                startActivity(intent)
+        if (user != null) {
+            binding.favoriteImageView.visibility = View.VISIBLE
+
+            // 星のImageViewをクリックしたときの処理
+            binding.favoriteImageView.setOnClickListener {
+                //反転の処理
+                isFavorite = !isFavorite
+                updateFavoriteImage()
             }
-        }
 
-        //
-        val dataBaseReference = FirebaseDatabase.getInstance().reference
-        //質問のUIDに基づいて、回答データの参照を設定
-        answerRef = dataBaseReference.child(ContentsPATH).child(question.genre.toString())
-            .child(question.questionUid).child(AnswersPATH)
-        //回答データの変更を監視するリスナーを設定
-        answerRef.addChildEventListener(eventListener)
+            //Fabをクリックしたときの処理
+            binding.fab.setOnClickListener {
+                // ログイン済みのユーザーを取得する
+                val user = FirebaseAuth.getInstance().currentUser
+
+                if (user == null) {
+                    // ログインしていなければログイン画面(LoginActivity)に遷移させる
+                    val intent = Intent(applicationContext, LoginActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    // Questionを渡して回答作成画面を起動する
+                    val intent = Intent(applicationContext, AnswerSendActivity::class.java)
+                    intent.putExtra("question", question)
+                    startActivity(intent)
+                }
+            }
+
+            //
+            val dataBaseReference = FirebaseDatabase.getInstance().reference
+            //質問のUIDに基づいて、回答データの参照を設定
+            answerRef = dataBaseReference.child(ContentsPATH).child(question.genre.toString())
+                .child(question.questionUid).child(AnswersPATH)
+            //回答データの変更を監視するリスナーを設定
+            answerRef.addChildEventListener(eventListener)
+        }
+    }
+    // 星の画像を更新する
+    private fun updateFavoriteImage() {
+        if (isFavorite) {
+            binding.favoriteImageView.setImageResource(R.drawable.ic_star)
+        } else {
+            binding.favoriteImageView.setImageResource(R.drawable.ic_star_border)
+        }
     }
 }

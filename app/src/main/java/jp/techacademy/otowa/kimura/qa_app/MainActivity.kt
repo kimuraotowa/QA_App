@@ -79,6 +79,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             adapter.notifyDataSetChanged()
         }
 
+
+
         //onChildChanged:質問に対して回答が投稿され
         //
         override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
@@ -224,6 +226,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //メニューアイテム選択：ツールバーのタイトル変更、ジャンルを表すgenre変数値の
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.nav_favorite ->{
+                binding.content.toolbar.title = getString(R.string.menu_favorite_label)
+            }
+
             R.id.nav_hobby -> {
                 binding.content.toolbar.title = getString(R.string.menu_hobby_label)
                 genre = 1
