@@ -22,6 +22,9 @@ class QuestionDetailActivity : AppCompatActivity() {
     //Firebaseの回答データを参照を保存するための変数。
     private lateinit var answerRef: DatabaseReference
 
+    //Firebaseにお気に入りデータを保存するための変数
+    private lateinit var favoriteRef: DatabaseReference
+
     //星がタップされたかどうかの変数
     private var isFavorite = false
 
@@ -84,16 +87,32 @@ class QuestionDetailActivity : AppCompatActivity() {
         binding.listView.adapter = adapter
         adapter.notifyDataSetChanged()
 
+        //現在のユーザー取得
         val user = FirebaseAuth.getInstance().currentUser
 
+        //ログインしてる場合ImageView表示
         if (user != null) {
             binding.favoriteImageView.visibility = View.VISIBLE
+        }else {
+            //ログインしていない場合非表示
+            binding.favoriteImageView.visibility = View.GONE
+
+
+            val dataBaseReference = FirebaseDatabase.getInstance().reference
+            val favoriteRef = dataBaseReference.child(FavoritePATH).child(question.questionUid)
+                .child(question.genre.toString())
 
             // 星のImageViewをクリックしたときの処理
             binding.favoriteImageView.setOnClickListener {
                 //反転の処理
                 isFavorite = !isFavorite
                 updateFavoriteImage()
+
+                if (isFavorite) {
+                    favoriteRef.setValue(true)
+                } else {
+                    favoriteRef.removeValue()
+                }
             }
 
             //Fabをクリックしたときの処理
@@ -113,11 +132,10 @@ class QuestionDetailActivity : AppCompatActivity() {
                 }
             }
 
-            //
-            val dataBaseReference = FirebaseDatabase.getInstance().reference
             //質問のUIDに基づいて、回答データの参照を設定
             answerRef = dataBaseReference.child(ContentsPATH).child(question.genre.toString())
                 .child(question.questionUid).child(AnswersPATH)
+
             //回答データの変更を監視するリスナーを設定
             answerRef.addChildEventListener(eventListener)
         }

@@ -21,10 +21,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     //databaseReference：FirebaseのRealtime Databaseの参照を保存するための変数
     private lateinit var databaseReference: DatabaseReference
+
     //questionArrayList：質問データを格納するためのリスト
     private lateinit var questionArrayList: ArrayList<Question>
+
     //adapter:質問データを表示するためのアダプター
     private lateinit var adapter: QuestionsListAdapter
+
     //genreRef：特定のジャンルに対するデータベースの参照を保存するための変数
     private var genreRef: DatabaseReference? = null
 
@@ -80,7 +83,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
 
-
         //onChildChanged:質問に対して回答が投稿され
         //
         override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         override fun onCancelled(p0: DatabaseError) {}
     }
 
-        override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -126,8 +128,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //フローティングアクションボタン(画面右下丸いボタン)がクリックされたときのリスナー
         binding.content.fab.setOnClickListener {
             //ジャンルを選択していない場合はメッセージを表示するだけ
-            if (genre == 0){
-                Snackbar.make(it, getString(R.string.question_no_select_genre), Snackbar.LENGTH_LONG).show()
+            if (genre == 0) {
+                Snackbar.make(
+                    it,
+                    getString(R.string.question_no_select_genre),
+                    Snackbar.LENGTH_LONG
+                ).show()
                 return@setOnClickListener
             }
             // ログイン済みのユーザーを取得する
@@ -166,23 +172,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //ドロワーのメニューが選択された時の処理
         binding.navView.setNavigationItemSelectedListener(this)
 
-            // Firebaseを作るため
-            databaseReference = FirebaseDatabase.getInstance().reference
+        // Firebaseを作るため
+        databaseReference = FirebaseDatabase.getInstance().reference
 
-            // ListViewの準備
-            adapter = QuestionsListAdapter(this)
-            questionArrayList = ArrayList()
-            adapter.notifyDataSetChanged()
+        // ListViewの準備
+        adapter = QuestionsListAdapter(this)
+        questionArrayList = ArrayList()
+        adapter.notifyDataSetChanged()
 
-            binding.content.inner.listView.setOnItemClickListener{ _, _, position,_ ->
-                //質問の詳細画面を起動する
-                //QuestionDetailActivityを起動
-                val intent = Intent(applicationContext, QuestionDetailActivity::class.java)
-                //質問データ渡す
-                intent.putExtra("question",questionArrayList[position])
-                //起動
-                startActivity(intent)
-            }
+        binding.content.inner.listView.setOnItemClickListener { _, _, position, _ ->
+            //質問の詳細画面を起動する
+            //QuestionDetailActivityを起動
+            val intent = Intent(applicationContext, QuestionDetailActivity::class.java)
+            //質問データ渡す
+            intent.putExtra("question", questionArrayList[position])
+            //起動
+            startActivity(intent)
+        }
+
+        updateNavigationView()
 
     }
 
@@ -192,10 +200,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //ナビゲーションView取得
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
 
-        if (genre == 0){
+        if (genre == 0) {
             //ナビゲーションメニューの最初のアイテムを選択。
             onNavigationItemSelected(navigationView.menu.getItem(0))
         }
+        updateNavigationView()
     }
 
     //オプションメニュー
@@ -226,9 +235,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //メニューアイテム選択：ツールバーのタイトル変更、ジャンルを表すgenre変数値の
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_favorite ->{
-                binding.content.toolbar.title = getString(R.string.menu_favorite_label)
-            }
 
             R.id.nav_hobby -> {
                 binding.content.toolbar.title = getString(R.string.menu_hobby_label)
@@ -245,6 +251,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_computer -> {
                 binding.content.toolbar.title = getString(R.string.menu_computer_label)
                 genre = 4
+            }
+            R.id.nav_favorite -> {
+                binding.content.toolbar.title = getString(R.string.menu_favorite_label)
             }
         }
 
@@ -271,5 +280,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //メニューアイテムの選択処理が完了したことを示す
         return true
+    }
+
+    //お気に入りの非表示、表示の設定
+    private fun updateNavigationView() {
+        //ナビゲーションを取得
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        //ナビゲーションのメニュー取得
+        val menu = navigationView.menu
+        //現在のユーザー取得
+        val user = FirebaseAuth.getInstance().currentUser
+
+        //お気に入りメニュー項目を取得し、ユーザーがログインしている場合のみ表示
+        if (user != null) {
+            menu.findItem(R.id.nav_favorite).isVisible = true
+        } else {
+            menu.findItem(R.id.nav_favorite).isVisible = false
+        }
     }
 }
