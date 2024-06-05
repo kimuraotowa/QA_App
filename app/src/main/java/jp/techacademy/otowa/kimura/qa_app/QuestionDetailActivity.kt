@@ -110,9 +110,6 @@ class QuestionDetailActivity : AppCompatActivity() {
                 //データの取得がキャンセルされた時
                 override fun onCancelled(firebaseError: DatabaseError) {}
             })
-            binding.favoriteImageView.setOnClickListener {
-
-            }
 
             // 星のImageViewをクリックしたときの処理
             binding.favoriteImageView.setOnClickListener {

@@ -95,16 +95,8 @@ class FavoriteListActivity:AppCompatActivity() {
                                 }
 
                                 //質問オブジェクトの作成
-                                val question = Question(
-                                    title,
-                                    body,
-                                    name,
-                                    uid,
-                                    questionUid,
-                                    genre.toInt(),
-                                    bytes,
-                                    answers
-                                )
+                                val question = Question(title, body, name, uid, questionUid, genre.toInt(), bytes, answers)
+
                                 //お気に入りリストへの追加
                                 favoriteArrayList.add(question)
                                 //新しい質問リストを設定
@@ -118,11 +110,36 @@ class FavoriteListActivity:AppCompatActivity() {
                     })
                 }
 
+                //質問の内容を変える時に呼ばれる
                 override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {}
-                override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
+
+                //onChildRemoved:お気に入りリストから質問が削除された場合に、その質問をリストから削除し、UIを更新するために使用される
+                override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                    //削除された質問のUIDを取得
+                    val questionUid = dataSnapshot.key ?: ""
+                    //削除された質問をリストから削除
+                    favoriteArrayList.removeAll { it.questionUid == questionUid }
+                    //アダプターに新しい質問を設定し、データの更新を通知
+                    adapter.setQuestionArrayList(favoriteArrayList)
+                    adapter.notifyDataSetChanged()
+                }
+
+                //リスト内のアイテムの順序が変更された場合に、その順序を反映してUIを更新するために使用する
                 override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {}
+                //順序が変更された場合に、その変更を反映するために使用する。
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
+
+            binding.listView.setOnItemClickListener { _, _, position, _ ->
+                //質問の詳細画面を起動する
+                //QuestionDetailActivityを起動
+                val intent = Intent(applicationContext, QuestionDetailActivity::class.java)
+                //質問データ渡す
+                intent.putExtra("question", favoriteArrayList[position])
+                //起動
+                startActivity(intent)
+            }
+
         } else {
             //ログインしていない場合LoginActivityに遷移
             val intent = Intent(this, LoginActivity::class.java)

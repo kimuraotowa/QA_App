@@ -190,8 +190,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             startActivity(intent)
         }
 
-        updateNavigationView()
-
     }
 
     //Activity再会時に呼ばれる（更新する処理）
@@ -257,6 +255,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
               //  binding.content.toolbar.title = getString(R.string.menu_favorite_label)
                 val intent = Intent(this,FavoriteListActivity::class.java)
                 startActivity(intent)
+
+                //ドロワーを閉じた状態にするため
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+
+                //お気に入りを選択した場合だけチェックをつけない
+                return false
             }
         }
 
@@ -266,7 +270,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // 質問のリストをクリアしてから再度Adapterにセットし、AdapterをListViewにセットし直す
         questionArrayList.clear()
-        //アダプターにに空の質問リストをセットする。
+        //アダプターに空の質問リストをセットする。
         adapter.setQuestionArrayList(questionArrayList)
         //アダプターとリストViewに再設定する。
         binding.content.inner.listView.adapter = adapter
@@ -295,10 +299,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val user = FirebaseAuth.getInstance().currentUser
 
         //お気に入りメニュー項目を取得し、ユーザーがログインしている場合のみ表示
-        if (user != null) {
-            menu.findItem(R.id.nav_favorite).isVisible = true
-        } else {
-            menu.findItem(R.id.nav_favorite).isVisible = false
-        }
+        menu.findItem(R.id.nav_favorite).isVisible = user != null
+        //下記のコードが上記のコードに省略できる
+        //if (user != null) {
+        //            menu.findItem(R.id.nav_favorite).isVisible = true
+        //        } else {
+        //            menu.findItem(R.id.nav_favorite).isVisible = false
+        //        }
     }
 }
