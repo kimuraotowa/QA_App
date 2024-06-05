@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
             //dataSnapshot：データの取得し、Mapとして扱う
             val map = dataSnapshot.value as Map<*, *>
-            //
+
             val title = map["title"] as? String ?: ""
             val body = map["body"] as? String ?: ""
             val name = map["name"] as? String ?: ""
@@ -253,7 +253,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 genre = 4
             }
             R.id.nav_favorite -> {
-                binding.content.toolbar.title = getString(R.string.menu_favorite_label)
+                //以下記載：お気に入り一覧画面のファイルを作ってるからいらない
+              //  binding.content.toolbar.title = getString(R.string.menu_favorite_label)
+                val intent = Intent(this,FavoriteListActivity::class.java)
+                startActivity(intent)
             }
         }
 

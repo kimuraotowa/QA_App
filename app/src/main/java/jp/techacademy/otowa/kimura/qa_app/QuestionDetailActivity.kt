@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import jp.techacademy.otowa.kimura.qa_app.databinding.ActivityQuestionDetailBinding
 
+//質問の詳細と回答を表示する
 class QuestionDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQuestionDetailBinding
 
@@ -93,25 +94,47 @@ class QuestionDetailActivity : AppCompatActivity() {
         //ログインしてる場合ImageView表示
         if (user != null) {
             binding.favoriteImageView.visibility = View.VISIBLE
-        }else {
-            //ログインしていない場合非表示
-            binding.favoriteImageView.visibility = View.GONE
 
-
+            //FireBaseのコンテンツ表示
             val dataBaseReference = FirebaseDatabase.getInstance().reference
-            val favoriteRef = dataBaseReference.child(FavoritePATH).child(question.questionUid)
-                .child(question.genre.toString())
+            favoriteRef =
+                dataBaseReference.child(FavoritePATH).child(user.uid).child(question.questionUid)
+
+            //Firebaseからお気に入りのデータを一度だけ取得
+            favoriteRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    //isFavorite変数にお気に入りの状態を設定
+                    isFavorite = dataSnapshot.exists()
+                    updateFavoriteImage()
+                }
+                //データの取得がキャンセルされた時
+                override fun onCancelled(firebaseError: DatabaseError) {}
+            })
+            binding.favoriteImageView.setOnClickListener {
+
+            }
 
             // 星のImageViewをクリックしたときの処理
             binding.favoriteImageView.setOnClickListener {
-                //反転の処理
-                isFavorite = !isFavorite
-                updateFavoriteImage()
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user == null) {
+                    // ログインしていない場合はログイン画面に遷移
+                    val intent = Intent(applicationContext, LoginActivity::class.java)
+                    startActivity(intent)
 
-                if (isFavorite) {
-                    favoriteRef.setValue(true)
                 } else {
-                    favoriteRef.removeValue()
+                    //反転の処理
+                    isFavorite = !isFavorite
+                    updateFavoriteImage()
+
+                    //Firebaseの保存
+                    if (isFavorite) {
+                        val favoriteData = mapOf("genre" to question.genre.toString())
+                        favoriteRef.setValue(favoriteData)
+                    } else {
+                        //削除
+                        favoriteRef.removeValue()
+                    }
                 }
             }
 
@@ -138,8 +161,12 @@ class QuestionDetailActivity : AppCompatActivity() {
 
             //回答データの変更を監視するリスナーを設定
             answerRef.addChildEventListener(eventListener)
+
+        } else {
+            binding.favoriteImageView.visibility = View.GONE
         }
     }
+
     // 星の画像を更新する
     private fun updateFavoriteImage() {
         if (isFavorite) {

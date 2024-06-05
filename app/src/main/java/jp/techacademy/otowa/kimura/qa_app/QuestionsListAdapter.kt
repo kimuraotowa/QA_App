@@ -12,7 +12,7 @@ import jp.techacademy.otowa.kimura.qa_app.databinding.ListQuestionsBinding
 //listViewのアダプターとして機能
 //
 class QuestionsListAdapter(context: Context) : BaseAdapter() {
-    //XMLレイアウトファイルをViewobjectに変換する際に使用する
+    //XMLレイアウトファイルをView objectに変換する際に使用する
     private var layoutInflater: LayoutInflater
     //質問リストを保存するためのArrayList<Question>です
     private var questionArrayList = ArrayList<Question>()
@@ -83,5 +83,6 @@ class QuestionsListAdapter(context: Context) : BaseAdapter() {
     //質問リストを設定する為のメソッド、新しい質問を受け取り、内部のリストを更新します。
     fun setQuestionArrayList(questionArrayList: ArrayList<Question>) {
         this.questionArrayList = questionArrayList
+        notifyDataSetChanged()
     }
 }
