@@ -161,6 +161,12 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         } else {
             binding.favoriteImageView.visibility = View.GONE
+
+            //ログアウト時のFabの処理
+            binding.fab.setOnClickListener{
+                val intent = Intent(applicationContext, LoginActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
