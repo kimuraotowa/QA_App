@@ -91,6 +91,11 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         //FireBaseのコンテンツ表示
         val dataBaseReference = FirebaseDatabase.getInstance().reference
+        //質問のUIDに基づいて、回答データの参照を設定
+        answerRef = dataBaseReference.child(ContentsPATH).child(question.genre.toString())
+            .child(question.questionUid).child(AnswersPATH)
+        //回答データの変更を監視するリスナーを設定
+        answerRef.addChildEventListener(eventListener)
 
         //Fabをクリックしたときの処理
         binding.fab.setOnClickListener {
@@ -107,12 +112,6 @@ class QuestionDetailActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-
-        //質問のUIDに基づいて、回答データの参照を設定
-        answerRef = dataBaseReference.child(ContentsPATH).child(question.genre.toString())
-            .child(question.questionUid).child(AnswersPATH)
-        //回答データの変更を監視するリスナーを設定
-        answerRef.addChildEventListener(eventListener)
     }
 
     //詳細画面でログインを行って、ログインした後に戻っってきた時の処理

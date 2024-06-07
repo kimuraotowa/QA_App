@@ -35,10 +35,32 @@ class FavoriteListActivity:AppCompatActivity() {
         adapter = QuestionsListAdapter(this)
         binding.listView.adapter = adapter
 
+        binding.listView.setOnItemClickListener { _, _, position, _ ->
+            //質問の詳細画面を起動する
+            //QuestionDetailActivityを起動
+            val intent = Intent(applicationContext, QuestionDetailActivity::class.java)
+            //質問データ渡す
+            intent.putExtra("question", favoriteArrayList[position])
+            //起動
+            startActivity(intent)
+        }
+
         //現在のユーザーの取得
-        //ログインしている場合お気に入りの質問を参照するリファレンスを設定
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null){
+            //ログインしていない場合LoginActivityに遷移
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // データを再取得して更新
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
+            favoriteArrayList.clear()
             val dataBaseReference = FirebaseDatabase.getInstance().reference
             favoriteRef = dataBaseReference.child(FavoritePATH).child(user.uid)
 
@@ -56,7 +78,6 @@ class FavoriteListActivity:AppCompatActivity() {
 
                     val questionRef =
                         dataBaseReference.child(ContentsPATH).child(genre).child(questionUid)
-
                     //質問が追加された時のリスナー
                     questionRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         //質問が追加された時に、その質問の詳細を一度だけ取得
@@ -129,23 +150,6 @@ class FavoriteListActivity:AppCompatActivity() {
                 //順序が変更された場合に、その変更を反映するために使用する。
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
-
-            binding.listView.setOnItemClickListener { _, _, position, _ ->
-                //質問の詳細画面を起動する
-                //QuestionDetailActivityを起動
-                val intent = Intent(applicationContext, QuestionDetailActivity::class.java)
-                //質問データ渡す
-                intent.putExtra("question", favoriteArrayList[position])
-                //起動
-                startActivity(intent)
-            }
-
-        } else {
-            //ログインしていない場合LoginActivityに遷移
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
         }
     }
 }
-
